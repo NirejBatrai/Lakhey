@@ -105,30 +105,28 @@ export default function Products() {
       is_new: true,
     },
   ];
+
   return (
     <>
-      <NavBar></NavBar>
+      <NavBar />
       <div className="pt-14 px-4">
         <h1 className="font-bold text-2xl text-center my-4">
           Lakhey WorkShop Shirt
         </h1>
-        <div className="flex flex-wrap m-auto justify-center w-[80%]  m-4 p-4  mb-10">
-          {products.map((product, index) => {
-            return (
-              <ProductItem
-                key={index}
-                index={index}
-                productName={product.name}
-                description={product.description}
-                image={product.image}
-                price={product.price}
-                isNew={product.is_new}
-                back_image={product.back_image}
-              />
-            );
-          })}
+        <div className="flex flex-wrap m-auto justify-center w-[80%] m-4 p-4 mb-10">
+          {products.map((product, index) => (
+            <ProductItem
+              key={index}
+              index={index}
+              productName={product.name}
+              description={product.description}
+              image={product.image}
+              price={product.price}
+              isNew={product.is_new}
+              back_image={product.back_image}
+            />
+          ))}
         </div>
-
         <Footer />
       </div>
     </>
