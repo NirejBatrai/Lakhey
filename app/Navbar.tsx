@@ -4,7 +4,12 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "./context/CartContext";
 import { ShoppingCart, User } from "lucide-react";
-import { jwtDecode } from "jwt-decode";
+import {
+  getProfileFromToken as getProfileFromLS,
+  // getToken,
+  setProfileFromToken,
+  UserPayload,
+} from "./utils/utilFunc";
 
 export default function NavBar() {
   const [isClick, setisClick] = useState(false);
@@ -19,22 +24,51 @@ export default function NavBar() {
   const [loginError, setLoginError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [profile, setProfile] = useState<UserPayload | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const { cart, itemCount, totalPrice, removeFromCart, updateQuantity } =
     useCart();
 
+  // Function to fetch user profile
+  // const fetchUserProfile = async (userId: number) => {
+  //   const token = getToken();
+  //   if (!token) {
+  //     throw new Error("No token found");
+  //   }
+
+  //   const response = await fetch(
+  //     "http://localhost:3002/auth/profile/" + userId,
+  //     {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     }
+  //   );
+
+  //   if (!response.ok) {
+  //     throw new Error("Failed to fetch profile");
+  //   }
+
+  //   setProfile(response.data!);
+
+  //   return await response.json();
+  // };
+
   useEffect(() => {
-    // Check if user is logged in on component mount
-    const token = localStorage.getItem("token");
-    console.log(token);
-    if (token) {
-      const decoded = jwtDecode(token);
-      console.log(decoded);
+    try {
+      const savedUserProfile: UserPayload = getProfileFromLS();
+      setProfile(savedUserProfile);
       setIsLoggedIn(true);
-    } else {
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Invalid token:", error);
+      localStorage.removeItem("token");
       setIsLoggedIn(false);
+      setLoading(false);
     }
-  }, [setIsLoggedIn, isLoggedIn]);
+  }, []);
 
   useEffect(() => {
     // Add scroll event listener
@@ -91,13 +125,13 @@ export default function NavBar() {
     setIsRegisterOpen(false);
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError("");
 
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
+      const response = await fetch("http://localhost:3002/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,13 +148,8 @@ export default function NavBar() {
         throw new Error(data.message || "Login failed");
       }
 
-      // Handle successful login
-      console.log("Login successful:", data);
-
-      // Store the token if your backend returns one
-      if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
-      }
+      const savedUserData = setProfileFromToken(data.access_token);
+      setProfile(savedUserData);
 
       // Update login state
       setIsLoggedIn(true);
@@ -131,21 +160,19 @@ export default function NavBar() {
       setPassword("");
     } catch (error) {
       console.error("Login error:", error);
-      setLoginError(
-        error.message || "Failed to login. Please check your credentials."
-      );
+      setLoginError("Failed to login. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError(""); // Reset any previous error messages
 
     try {
-      const response = await fetch("http://localhost:3001/auth/regist", {
+      const response = await fetch("http://localhost:3002/auth/regist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,17 +190,8 @@ export default function NavBar() {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Handle successful registration
-      console.log("Registration successful:", data);
-
-      // Store token if your backend returns one
-      if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
-      }
-
-      // Update login state
-      setIsLoggedIn(true);
       setIsRegisterOpen(false);
+      setIsLoginOpen(true);
 
       // Reset form
       setUsername("");
@@ -181,7 +199,7 @@ export default function NavBar() {
       setPassword("");
     } catch (error) {
       console.error("Registration error:", error);
-      setLoginError(error.message || "Failed to register. Please try again.");
+      setLoginError("Failed to register. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -194,6 +212,7 @@ export default function NavBar() {
     // Update state
     setIsLoggedIn(false);
     setUserDropdownOpen(false);
+    setProfile(null);
 
     // Reset any user-related data
     setUsername("");
@@ -294,12 +313,17 @@ export default function NavBar() {
                   >
                     <User size={20} />
                     <span className="ml-1">
-                      {isLoggedIn ? "Account" : "Login"}
+                      {isLoggedIn ? `${profile?.username}` : "Login"}
                     </span>
                   </button>
 
-                  {isLoggedIn && userDropdownOpen && (
+                  {/* User Dropdown */}
+                  {userDropdownOpen && isLoggedIn && profile && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
+                      <div className="px-4 py-2 text-sm text-gray-700 border-b">
+                        <p className="font-medium">{profile.username}</p>
+                        <p className="text-xs">{profile.email}</p>
+                      </div>
                       <Link
                         href="/profile"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -590,13 +614,26 @@ export default function NavBar() {
                     <span>Subtotal</span>
                     <span className="font-medium">${totalPrice}</span>
                   </div>
-                  <Link
-                    href="/checkout"
-                    className="block w-full bg-black text-white text-center py-2 rounded hover:bg-gray-800 transition"
-                    onClick={toggleCart}
-                  >
-                    Checkout
-                  </Link>
+                  {isLoggedIn ? (
+                    <Link
+                      href="/checkout"
+                      className="block w-full bg-black text-white text-center py-2 rounded hover:bg-gray-800 transition"
+                      onClick={toggleCart}
+                    >
+                      Checkout
+                    </Link>
+                  ) : (
+                    <button
+                      className="block w-full bg-black text-white text-center py-2 rounded hover:bg-gray-800 transition"
+                      onClick={() => {
+                        toggleCart();
+                        setIsLoginOpen(true);
+                      }}
+                    >
+                      Login to Checkout
+                    </button>
+                  )}
+
                   <button
                     onClick={toggleCart}
                     className="block w-full text-center py-2 mt-2 text-gray-600 hover:text-black"
@@ -714,7 +751,7 @@ export default function NavBar() {
             </form>
             <div className="mt-4 text-center">
               <p className="text-sm text-black">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <button
                   onClick={() => {
                     setIsLoginOpen(false);
@@ -852,6 +889,7 @@ export default function NavBar() {
                   }}
                   className="font-medium text-black hover:underline"
                 >
+                  {loading && "..."}
                   Login
                 </button>
               </p>

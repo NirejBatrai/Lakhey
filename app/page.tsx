@@ -16,7 +16,7 @@ export default function Home() {
                 New Arrivals
               </h2>
               <Link href="/products">
-                <button className="bg-white text-black font-semibold px-6 py-3 rounded-full hover:bg-gray-200 transition text-lg shadow-lg">
+                <button className="bg-white text-black font-semibold px-6 py-3 rounded-full hover:bg-gray-200 transition text-lg shadow-lg cursor-pointer">
                   Shop Now
                 </button>
               </Link>

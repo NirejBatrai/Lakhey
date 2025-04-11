@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import NavBar from "@/app/Navbar";
 import Footer from "@/app/components/Footer";
+import { CheckCircle } from "lucide-react";
 // This would need to be implemented if you're using it
 // import { useCart } from "../../../context/CartContext";
 
@@ -109,6 +110,9 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState("front");
 
+  // Add this inside your component:
+  const [showSuccess, setShowSuccess] = useState(false);
+
   if (!product) {
     return (
       <>
@@ -158,9 +162,16 @@ export default function ProductDetails() {
     } else {
       cart.push(cartItem);
     }
-
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Added to cart successfully!");
+
+    // Show the green success message
+    setShowSuccess(true);
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => setShowSuccess(false), 5000);
+    // alert("Added to cart successfully!");
+    // 🔁 Reload the page
+    window.location.reload();
   };
 
   return (
@@ -263,13 +274,19 @@ export default function ProductDetails() {
                   </button>
                 </div>
               </div>
-
               <button
                 className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 transition mb-4"
                 onClick={handleAddToCart}
               >
                 Add to Cart
               </button>
+
+              {showSuccess && (
+                <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center text-green-700 bg-green-100 border border-green-300 px-4 py-2 rounded-md shadow-md">
+                  <CheckCircle className="mr-2" />
+                  <span>1 item added to cart</span>
+                </div>
+              )}
 
               <div className="border-t pt-6 mt-6">
                 <h3 className="font-semibold mb-2">Product Details</h3>

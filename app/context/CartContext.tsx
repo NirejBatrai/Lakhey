@@ -17,20 +17,32 @@ type CartItem = {
   image: string;
 };
 
+export type Address = {
+  street: string;
+  city: string;
+  state?: string; // optional
+  postalCode: string;
+  country: string;
+};
+
 type CartContextType = {
   cart: CartItem[];
+
   addToCart: (item: CartItem) => void;
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
+  address: Address;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  const [address, setaddress] = useState<Address | null>(null);
 
   // Load cart from localStorage on initial load
   useEffect(() => {
@@ -90,6 +102,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     0
   );
 
+  const addAddress = (address: Address) => {
+    setaddress(address);
+  };
+
   const value = {
     cart,
     addToCart,
@@ -98,6 +114,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     clearCart,
     itemCount,
     totalPrice,
+    addAddress,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

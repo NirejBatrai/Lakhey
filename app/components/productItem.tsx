@@ -48,13 +48,13 @@ export default function ProductItem({
         <div className="relative w-full h-[250px] mb-3 rounded-md overflow-hidden">
           <Image
             className="rounded-md w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-300 group-hover:opacity-0"
-            src={image}
+            src={image ?? "/brownshirt.jpg"}
             fill
-            alt={productName}
+            alt={productName ?? ""}
           />
-          <Image
+          <Image //TODO: Handle the case where the image is null
             className="rounded-md w-full h-full object-cover absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            src={back_image}
+            src={back_image ?? "/brownshirt.jpg"}
             fill
             alt={`${productName} back`}
           />
