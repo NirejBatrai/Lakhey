@@ -6,7 +6,7 @@ import NavBar from "../Navbar";
 import { useEffect, useState } from "react";
 
 export default function Products() {
-  const [products, setProducts] = useState(null); // use null to check loading state
+  const [products, setProducts] = useState<[]>([]); // use null to check loading state
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -33,18 +33,30 @@ export default function Products() {
           {products === null ? (
             <div>Loading...</div>
           ) : (
-            products.map((product, index) => (
-              <ProductItem
-                key={index}
-                index={index}
-                productName={product.name}
-                description={product.description}
-                image={product.image}
-                price={product.price}
-                isNew={product.is_new}
-                back_image={product.back_image}
-              />
-            ))
+            products.map(
+              (
+                product: {
+                  name: string;
+                  description: string;
+                  image: string;
+                  price: number;
+                  is_new: boolean;
+                  back_image: string;
+                },
+                index: number
+              ) => (
+                <ProductItem
+                  key={index}
+                  index={index}
+                  productName={product.name}
+                  description={product.description}
+                  image={product.image}
+                  price={product.price}
+                  isNew={product.is_new}
+                  back_image={product.back_image}
+                />
+              )
+            )
           )}
         </div>
         <Footer />

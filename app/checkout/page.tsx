@@ -284,7 +284,7 @@ export default function Checkout() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-black mb-1"
                     >
                       Email*
                     </label>
@@ -294,7 +294,7 @@ export default function Checkout() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md ${
+                      className={`w-full px-4 py-2 border text-black rounded-md ${
                         errors.email ? "border-red-500" : "border-gray-300"
                       }`}
                     />

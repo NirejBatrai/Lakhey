@@ -97,6 +97,15 @@ const products = [
   },
 ];
 
+export interface cartItem {
+  id: string;
+  name: string;
+  price: number;
+  size: string;
+  quantity: number;
+  image: string;
+}
+
 export default function ProductDetails() {
   const params = useParams();
   const router = useRouter();
@@ -154,7 +163,7 @@ export default function ProductDetails() {
 
     // Check if item already exists
     const existingItemIndex = cart.findIndex(
-      (item: any) => item.id === cartItem.id
+      (item: cartItem) => item.id === cartItem.id
     );
 
     if (existingItemIndex >= 0) {
