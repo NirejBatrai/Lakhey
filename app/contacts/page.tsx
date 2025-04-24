@@ -13,7 +13,7 @@ export default function ContactPage() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -21,10 +21,9 @@ export default function ContactPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     // Here you would typically send the form data to your backend
-    console.log("Form submitted:", formData);
     setIsSubmitted(true);
 
     // Reset form after submission

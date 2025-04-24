@@ -67,7 +67,7 @@ const UserOrders = () => {
         }
 
         // Replace with your actual API endpoint
-        const response = await fetch("http://localhost:3002/orders", {
+        const response = await fetch("http://localhost:3000/orders", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

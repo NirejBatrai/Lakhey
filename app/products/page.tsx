@@ -1,21 +1,46 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import ProductItem from "../components/productItem";
 import Footer from "../components/Footer";
 import NavBar from "../Navbar";
-import { useEffect, useState } from "react";
+
+// Product interface that matches your backend entity
+interface Product {
+  id: number;
+  title: string;
+  description: string | null;
+  price: number;
+  stock: number;
+  images: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 export default function Products() {
-  const [products, setProducts] = useState<[]>([]); // use null to check loading state
+  const [products, setProducts] = useState<Product[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setIsLoading(true);
       try {
-        const res = await fetch("http://localhost:3002/products");
+        const res = await fetch("http://localhost:3000/products/all");
+        
+        if (!res.ok) {
+          throw new Error(`Failed to fetch: ${res.status}`);
+        }
+        
         const data = await res.json();
         setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("Failed to load products. Please try again later.");
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -29,34 +54,26 @@ export default function Products() {
         <h1 className="font-bold text-2xl text-center my-4">
           Lakhey WorkShop Shirt
         </h1>
-        <div className="flex flex-wrap m-auto justify-center w-[80%] m-4 p-4 mb-10">
-          {products === null ? (
-            <div>Loading...</div>
+        <div className="flex flex-wrap m-auto justify-center w-[80%] p-4 mb-10">
+          {isLoading ? (
+            <div className="text-center py-8">Loading...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-500">{error}</div>
+          ) : products && products.length > 0 ? (
+            products.map((product, index) => (
+              <ProductItem
+                key={product.id || index}
+                index={index}
+                productName={product.title}
+                description={product.description || ""}
+                image={product.images[0] || ""}
+                price={product.price}
+                isNew={product.stock > 0}
+                back_image={product.images[1] || ""}
+              />
+            ))
           ) : (
-            products.map(
-              (
-                product: {
-                  name: string;
-                  description: string;
-                  image: string;
-                  price: number;
-                  is_new: boolean;
-                  back_image: string;
-                },
-                index: number
-              ) => (
-                <ProductItem
-                  key={index}
-                  index={index}
-                  productName={product.name}
-                  description={product.description}
-                  image={product.image}
-                  price={product.price}
-                  isNew={product.is_new}
-                  back_image={product.back_image}
-                />
-              )
-            )
+            <div className="text-center py-8">No products found</div>
           )}
         </div>
         <Footer />

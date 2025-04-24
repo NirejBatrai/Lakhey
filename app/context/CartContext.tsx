@@ -67,7 +67,7 @@ type CartContextType = {
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
-  address: Address;
+  address: Address | null;
   getCreateOrderDto: (
     userId: number,
     userInfo: {
@@ -197,6 +197,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     totalPrice,
     addAddress,
     getCreateOrderDto,
+    address
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

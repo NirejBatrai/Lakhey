@@ -36,7 +36,7 @@ export default function ProductItem({
     };
 
     addToCart(cartItem);
-    alert("Item added to cart!");
+    // alert("Item added to cart!");
   };
 
   return (

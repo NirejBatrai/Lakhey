@@ -131,7 +131,7 @@ export default function NavBar() {
     setLoginError("");
 
     try {
-      const response = await fetch("http://localhost:3002/auth/login", {
+      const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +172,7 @@ export default function NavBar() {
     setLoginError(""); // Reset any previous error messages
 
     try {
-      const response = await fetch("http://localhost:3002/auth/regist", {
+      const response = await fetch("http://localhost:3000/auth/regist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -694,7 +694,7 @@ export default function NavBar() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm"
                 />
               </div>
               <div>
@@ -710,7 +710,7 @@ export default function NavBar() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm"
                 />
               </div>
               <div className="flex items-center justify-between">

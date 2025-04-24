@@ -5,10 +5,7 @@ export const getProfileFromToken = (): UserPayload => {
   if (!token) {
     throw new Error("No token found");
   }
-  const result: UserPayload = jwtDecode(token);
-  console.log("result");
-  console.log(result);
-  return result;
+  return jwtDecode(token);
 };
 
 export const getToken = (): string => {
