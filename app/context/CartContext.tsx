@@ -25,6 +25,39 @@ export type Address = {
   country: string;
 };
 
+export interface CreateOrderDto {
+  userId: number;
+  orderItems: OrderItemDto[];
+  shippingAddressId?: number;
+  shippingAddress?: ShippingAddressDto;
+  status: OrderStatus;
+}
+
+export interface OrderItemDto {
+  productId: number;
+  quantity: number;
+}
+
+export interface ShippingAddressDto {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
+// Match your backend enum (adjust values to your actual enum if needed)
+export type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
+
 type CartContextType = {
   cart: CartItem[];
 
@@ -35,6 +68,15 @@ type CartContextType = {
   itemCount: number;
   totalPrice: number;
   address: Address;
+  getCreateOrderDto: (
+    userId: number,
+    userInfo: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+    }
+  ) => CreateOrderDto;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -106,6 +148,45 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setaddress(address);
   };
 
+  const getCreateOrderDto = (
+    userId: number,
+    userInfo: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+    }
+  ): CreateOrderDto => {
+    if (!userId) {
+      throw new Error("User ID is required.");
+    }
+
+    if (!address) {
+      throw new Error("Shipping address is required.");
+    }
+
+    if (cart.length === 0) {
+      throw new Error("Cart is empty.");
+    }
+
+    return {
+      userId,
+      orderItems: cart.map((item) => ({
+        productId: parseInt(item.id, 10), // Make sure this matches backend expectations
+        quantity: item.quantity,
+      })),
+      shippingAddress: {
+        ...userInfo,
+        address: address.street,
+        city: address.city,
+        state: address.state ?? "",
+        zipCode: address.postalCode,
+        country: address.country,
+      },
+      status: "PENDING", // or make this configurable
+    };
+  };
+
   const value = {
     cart,
     addToCart,
@@ -115,6 +196,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     itemCount,
     totalPrice,
     addAddress,
+    getCreateOrderDto,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

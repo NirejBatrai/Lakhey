@@ -274,7 +274,7 @@ export default function NavBar() {
                   Products
                 </Link>
                 <Link
-                  href="/"
+                  href="/contacts"
                   className={`${
                     isScrolled
                       ? "text-white hover:bg-white hover:text-black"
@@ -448,7 +448,7 @@ export default function NavBar() {
                 Products
               </Link>
               <Link
-                href="/"
+                href="/contacts"
                 className={`block rounded-lg p-2 ${
                   isScrolled
                     ? "text-white hover:bg-white hover:text-black"

@@ -152,7 +152,7 @@ export default function Checkout() {
             Your cart is empty
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Looks like you haven't added any items to your cart yet.
+            Looks like you haven&apos;t added any items to your cart yet.
           </p>
           <Link
             href="/products"
@@ -500,6 +500,7 @@ export default function Checkout() {
                         className={`w-full px-4 py-2 border rounded-md text-black ${
                           errors.cardName ? "border-red-500" : "border-gray-300"
                         }`}
+                        checkout
                       />
                       {errors.cardName && (
                         <p className="mt-1 text-sm text-red-500">
